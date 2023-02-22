@@ -1,0 +1,82 @@
+name: Build Deploy
+on:
+  push:
+    branches:
+      - master
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout
+
+jobs:
+  build-deploy-poolparty:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          install: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-poolparty-public-ecr
+          aws-region: us-east-1
+
+      - name: Login to public Amazon ECR
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-poolparty-build-push
+          aws-region: us-west-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: poolparty-ecr
+          IMAGE_TAG: ${{ github.sha }}
+          PUBLIC_ASSETS_PATH: ${{ secrets.PUBLIC_ASSETS_PATH }}
+        run: |
+          docker buildx build --push \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --cache-from=type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Cannot use `--cache-to` due to https://github.com/docker/buildx/issues/271
+          # Caching to `latest` with inline caching which seems to work
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition poolparty --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: poolparty
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: poolparty
+          cluster: poolparty
+          wait-for-service-stability: true
