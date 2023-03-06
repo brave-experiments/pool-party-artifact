@@ -49,7 +49,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: poolparty-ecr
+          ECR_REPOSITORY: production-poolparty-ecr
           IMAGE_TAG: ${{ github.sha }}
           PUBLIC_ASSETS_PATH: ${{ secrets.PUBLIC_ASSETS_PATH }}
         run: |
