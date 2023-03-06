@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.get('/', function(req, res, next){
   console.log("hello");
-  res.send("hello, welcome to events\n");
+  res.send("hello, welcome to the pool party demo\n");
 });
 
 app.get('/yo', function(req, res, next){
