@@ -20,7 +20,8 @@
       <iframe src="" id="inner"></iframe>
       <script>
        const iframe = document.getElementById("inner");
-       iframe.src = "https://poolparty.privacytests.org/inner.html" + window.location.search;
+       const isBrave = location.host.includes("brave");
+       iframe.src = `https://poolparty.${isBrave ? "brave.com" : "privacytests.org"}/inner.html${window.location.search}`;
       </script>
     </div>
   </body>

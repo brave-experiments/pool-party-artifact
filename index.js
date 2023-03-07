@@ -55,7 +55,6 @@ app.post('/result', async function (req, res) {
 
 const server = app.listen(3501);
 
-
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', function connection(ws) {
