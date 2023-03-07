@@ -3,7 +3,7 @@ var path = require('path');
 
 const { WebSocketServer } = require('ws');
 
-var app = express();
+const app = express();
 
 app.use(express.json());
 
@@ -53,10 +53,10 @@ app.post('/result', async function (req, res) {
 });
 
 
-app.listen(3501);
+const server = app.listen(3501);
 
 
-const wss = new WebSocketServer({ port: 3500 });
+const wss = new WebSocketServer({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message) {
