@@ -1,13 +1,17 @@
 var express = require('express');
+var path = require('path');
+
 const { WebSocketServer } = require('ws');
 
 var app = express();
 
 app.use(express.json());
 
-app.get('/', function(req, res, next){
-  res.send("hello, welcome to the pool party demo\n");
-});
+//app.get('/', function(req, res, next){
+//  res.send("hello, welcome to the pool party demo\n");
+//});
+
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/source', async function(req, res) {
 //  console.log('Got /source');
