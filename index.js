@@ -6,17 +6,11 @@ var app = express();
 app.use(express.json());
 
 app.get('/', function(req, res, next){
-  console.log("hello");
   res.send("hello, welcome to the pool party demo\n");
 });
 
-app.get('/yo', function(req, res, next){
-  console.log("wassup hi");
-  res.send("wassup hi\n");
-});
-
 app.get('/source', async function(req, res) {
-  console.log('Got /source');
+//  console.log('Got /source');
 //  res.send("hi from /source");
   res.set({
     'Cache-Control': 'no-cache',
@@ -61,7 +55,6 @@ app.listen(3501);
 const wss = new WebSocketServer({ port: 3500 });
 
 wss.on('connection', function connection(ws) {
-  console.log("ws", performance.now());
   ws.on('message', function incoming(message) {
     try {
 //      console.log(message.toString());
