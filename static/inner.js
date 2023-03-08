@@ -435,7 +435,7 @@ const log = (msg, elapsedMs) => {
 // When page loads
 const run = async () => {
   const bigIntegerList = [];
-  const numCycles = intParam("cycles") ?? 10;
+  const numCycles = intParam("cycles") ?? 100;
 //  const sender = Math.random() >= 0.5;
   for (let i = 0; i < numCycles; ++i) {
     capture();
