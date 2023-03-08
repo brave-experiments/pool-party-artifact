@@ -23,6 +23,9 @@ const debug = params.get("debug") === "true";
 // What mode are we in? (websocket, sse, worker)
 const mode = params.get("mode");
 
+// Is this the child window?
+const child = params.get("child") === "true";
+
 // Figure out the current browser.
 const kBrowser = (() => {
   if (navigator.userAgent.indexOf("Edg") >= 0) {
@@ -99,7 +102,7 @@ const behaviors = {
         maxSlots: 200,
         maxValue: 128,
         pulseMs: 1000,
-        negotiateMs: 2000,
+        negotiateMs: 3000,
       },
       Safari: {
         listSize: 5,
@@ -116,7 +119,8 @@ const behaviors = {
       const timeout = window.setTimeout(() => {
         worker.terminate();
         reject(new Error("worker not responding"));
-      }, 400);
+        console.log("worker timed out");
+      }, 1600);
       worker.onmessage = function (_event) {
         window.clearTimeout(timeout);
         resolve(worker);
@@ -129,8 +133,8 @@ const behaviors = {
         listSize: 5,
         maxSlots: 512,
         maxValue: 128,
-        pulseMs: 2000,
-        negotiateMs: 2000,
+        pulseMs: 4000,
+        negotiateMs: 4000,
       },
     }
   },
@@ -257,19 +261,18 @@ const capture = () => {
 // Remove any resources that are dead (and thus won't be kept in the pool).
 const sweepDead = async () => {
   const t1 = Date.now();
-  console.log("sweep");
   if (alive) {
-    console.log("alive exists");
+    //console.log("alive exists");
     const deadResources = [...resources].filter(r => !alive(r));
     const destroyPromises = deadResources.map(r => {
       resources.delete(r);
       return destroy(r);
     });
-    console.log(destroyPromises);
+    //console.log(destroyPromises);
     await Promise.allSettled(destroyPromises);
   }
   const t2 = Date.now();
-  console.log("sweep", t2 - t1);
+  //console.log("sweep", t2 - t1);
 };
 
 // Consume up to 'max' resource slots and return number actually consumed.
@@ -332,8 +335,8 @@ const countValues = (values) => {
 // Return true if we have taken the sender role;
 // false if we are a receiver.
 const isSender = async () => {
-  //  await release(resources.size);
-  console.log("destroyed; left is ", JSON.stringify(countValues([...resources].map(r => r.readyState))));
+  // await release(resources.size);
+  //console.log("destroyed; left is ", JSON.stringify(countValues([...resources].map(r => r.readyState))));
   console.log("resources.size:", resources.size);
   await consume(k.maxSlots * 2); // - resources.size);
   await sleepMs(k.negotiateMs / 2);
@@ -504,6 +507,23 @@ const createAllCommandButtons = () => {
   createButtonForCommand("receive", () => receiveInteger());
 };
 
+
+const openChildWindow = async () => {
+  const isBrave = location.host.includes("brave");
+  const parentURL = location.href;
+  let childURL = isBrave ?
+        parentURL.replace("brave.com", "bravesoftware.com") :
+        parentURL.replace("privacytests.org", "arthuredelstein.net");
+  childURL += "&child=true";
+  window.open(parentURL + "&child=true", "_blank", "noopener, popup");
+  window.open(childURL, "_blank", "noopener, popup");
+//  await run();
+};
+
+const createStartButton = () => {
+  createButtonForCommand("run", () => openChildWindow());
+};
+
 // The main program.
 const main = async () => {
   console.log("detected", kBrowser);
@@ -511,7 +531,7 @@ const main = async () => {
   if (debug) {
     createAllCommandButtons();
   } else {
-    await run();
+    run();
   }
 };
 
