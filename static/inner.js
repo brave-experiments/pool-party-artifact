@@ -140,7 +140,7 @@ const behaviors = {
   },
   sse: {
     create: () => new Promise((resolve, reject) => {
-      const source = new EventSource("events/source");
+      const source = new EventSource("source");
       const timeout = window.setTimeout(() => {
         resolve(source);
       }, 200);
