@@ -94,8 +94,8 @@ const behaviors = {
         listSize: 5,
         maxSlots: 255,
         maxValue: 128,
-        pulseMs: 100,
-        negotiateMs: 100,
+        pulseMs: 200,
+        negotiateMs: 200,
       },
       Firefox: {
         listSize: 5,
@@ -140,7 +140,7 @@ const behaviors = {
   },
   sse: {
     create: () => new Promise((resolve, reject) => {
-      const source = new EventSource("events/source");
+      const source = new EventSource("source");
       const timeout = window.setTimeout(() => {
         resolve(source);
       }, 200);
