@@ -94,8 +94,8 @@ const behaviors = {
         listSize: 5,
         maxSlots: 255,
         maxValue: 128,
-        pulseMs: 100,
-        negotiateMs: 100,
+        pulseMs: 200,
+        negotiateMs: 200,
       },
       Firefox: {
         listSize: 5,
