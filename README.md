@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This code demonstrates pool party attacks as described in https://arxiv.org/abs/2112.06324.
+This code demonstrates pool party attacks as described in https://www.usenix.org/conference/usenixsecurity23/presentation/snyder.
 
 Pool party attacks make use of a covert communication channel between two websites concurrently loaded in a web browser. One website sends a message to a second website by exploiting limited-but-unpartitioned resource pools.
 
