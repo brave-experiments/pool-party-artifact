@@ -23,6 +23,7 @@ In this demo, the same website (and code) is run in both websites. A top-level p
 Here's a description of the important files in this repository:
 
 * `README.md`: This file, containing a description of the code.
+* `LICENSE`: This software is licensed under the Mozilla Public License Version 2.0.
 * `package.json`: The Node.js settings for this project.`
 * `index.js`: The Express.js server code. An active server is required to accept EventSource and WebSocket connections, so that connecting browsers may measure how many of these connections can be made successfully before hitting a browser-imposed limit.
 * `static/`: A directory containing static HTML and JS files
@@ -95,3 +96,4 @@ covert channel type):
 Each experiment consists of two web pages, viewed side by side in separate browser windows. For each experiment, the script will make approximately 100 communication attempts. In each attempt, the script in one window (chosen randomly) will attempt to send 35 bits to the other window using a pool party covert channel. The outcome of each attempt will be displayed in the page, where the message that was "sent" over the covert channel will be displayed as an 8-digit hexadecimal string in one window, and the "received" in the other window will be also be displayed as an 8-digit hexadecimal string. As sent and received strings are displayed in each web page accumulated in chronological order, with time stamps.
 
 It is expected that these strings will largely be identical (match). There are two exceptions where mismatches may be seen. First, because the first page may load some seconds before the other page, a few rounds of messaging will be unfruitful for the first opened page. (This behavior mimics the experience of web pages in the wild, which will be likely opened by the user at different times.) Second, because of timing anomalies in the creation and destruction of resources in the resource pool, it does happen that a message may be corrupted, as described in the paper.
+
